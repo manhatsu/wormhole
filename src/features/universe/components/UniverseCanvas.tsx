@@ -132,10 +132,37 @@ export const UniverseCanvas: React.FC = () => {
       setViewMode('zone');
     }
   };
+  // Add wheel zoom support for smoother zooming
+  const handleWheel = React.useCallback((e: WheelEvent) => {
+    if (isAnimating) return;
+    
+    e.preventDefault();
+    
+    const zoomFactor = e.deltaY > 0 ? 1.15 : 0.87;
+    const currentZ = animatedPosition.z;
+    const newZ = Math.max(15, Math.min(200, currentZ * zoomFactor));
+    
+    if (newZ !== currentZ) {
+      setTargetPosition({
+        ...animatedPosition,
+        z: newZ
+      });
+      setIsAnimating(true);
+    }
+  }, [animatedPosition, isAnimating, setTargetPosition, setIsAnimating]);
+
+  // Add wheel event listener
+  React.useEffect(() => {
+    const canvas = document.querySelector('.universe-canvas');
+    if (canvas) {
+      canvas.addEventListener('wheel', handleWheel, { passive: false });
+      return () => canvas.removeEventListener('wheel', handleWheel);
+    }
+  }, [handleWheel]);
 
   return (
     <div 
-      className={`relative w-full h-screen overflow-hidden ${
+      className={`universe-canvas relative w-full h-screen overflow-hidden ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
       onMouseDown={handleMouseDown}
@@ -210,7 +237,8 @@ export const UniverseCanvas: React.FC = () => {
             className="absolute inset-0"
             style={{
               transform: `translate(${-animatedPosition.x * 2}px, ${-animatedPosition.y * 2}px) scale(${100 / animatedPosition.z})`,
-              transition: isAnimating ? 'transform 1.5s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+              transition: isAnimating ? 'none' : 'transform 0.1s ease-out',
+              willChange: isAnimating ? 'transform' : 'auto',
             }}
           >
             {/* Enhanced Cosmic Phenomena (background groupings) */}

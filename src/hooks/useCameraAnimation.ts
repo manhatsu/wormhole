@@ -22,24 +22,29 @@ export const useCameraAnimation = (
 
     // Start animation
     const startTime = Date.now();
-    const duration = 1500; // 1.5 seconds for smooth but not too slow animation
+    const duration = 1200; // Slightly faster for more responsive feel
     const startPosition = { ...animatedPosition };
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Smoother easing function (ease-in-out-cubic)
-      const easeInOutCubic = progress < 0.5 
-        ? 4 * progress * progress * progress 
-        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      // Enhanced easing function for smoother zoom transitions
+      const easeInOutQuart = progress < 0.5
+        ? 8 * progress * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 4) / 2;
+
+      // Apply different easing for different axes for more natural movement
+      const xyEasing = easeInOutQuart;
+      const zEasing = progress < 0.5
+        ? 2 * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 2) / 2; // Smoother zoom easing
 
       const newPosition = {
-        x: startPosition.x + (targetPosition.x - startPosition.x) * easeInOutCubic,
-        y: startPosition.y + (targetPosition.y - startPosition.y) * easeInOutCubic,
-        z: startPosition.z + (targetPosition.z - startPosition.z) * easeInOutCubic,
+        x: startPosition.x + (targetPosition.x - startPosition.x) * xyEasing,
+        y: startPosition.y + (targetPosition.y - startPosition.y) * xyEasing,
+        z: startPosition.z + (targetPosition.z - startPosition.z) * zEasing,
       };
-
       setAnimatedPosition(newPosition);
 
       if (progress < 1) {

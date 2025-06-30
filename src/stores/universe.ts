@@ -54,11 +54,17 @@ export const useUniverseStore = create<UniverseState>((set, get) => ({
     const body = bodies.find(b => b.id === bodyId);
     if (!body) return;
     
+    const state = get();
+    
+    // Calculate smooth zoom level based on current position
+    const currentZ = state.targetPosition.z;
+    const targetZ = currentZ > 50 ? 25 : Math.max(20, currentZ * 0.6);
+    
     set({
       targetPosition: {
         x: body.position_x,
         y: body.position_y,
-        z: 25
+        z: targetZ
       },
       isAnimating: true,
       viewMode: 'focused',
@@ -68,9 +74,14 @@ export const useUniverseStore = create<UniverseState>((set, get) => ({
   },
   resetView: () => {
     const state = get();
+    
+    // Smooth transition back to overview
+    const currentPos = state.targetPosition;
+    const targetZ = currentPos.z < 80 ? 100 : Math.min(120, currentPos.z * 1.2);
+    
     set({
       cameraPosition: state.targetPosition, // Sync current position
-      targetPosition: { x: 0, y: 0, z: 100 },
+      targetPosition: { x: 0, y: 0, z: targetZ },
       selectedBody: null,
       focusedBody: null,
       viewMode: 'overview',

@@ -318,18 +318,24 @@ export const EnhancedCelestialBody: React.FC<EnhancedCelestialBodyProps> = ({
         rotateZ: 360,
       }}
       transition={{ 
-        duration: 1.5,
+        duration: 1.2,
         delay: Math.random() * 0.5,
         type: "spring",
-        stiffness: 100,
-        damping: 15,
+        stiffness: 120,
+        damping: 18,
         rotateZ: {
-          duration: 2,
+          duration: 1.8,
           ease: "easeOut"
         }
       }}
-      whileHover={{ scale: scale * 1.2 }}
-      whileTap={{ scale: scale * 0.9 }}
+      whileHover={{ 
+        scale: scale * 1.15,
+        transition: { duration: 0.2, ease: "easeOut" }
+      }}
+      whileTap={{ 
+        scale: scale * 0.95,
+        transition: { duration: 0.1, ease: "easeOut" }
+      }}
       onClick={onClick}
     >
       <div

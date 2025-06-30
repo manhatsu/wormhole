@@ -48,12 +48,13 @@ export const useDragging = (
     const deltaX = e.clientX - currentDragState.startPosition.x;
     const deltaY = e.clientY - currentDragState.startPosition.y;
 
-    // Scale the movement based on zoom level (higher z = more zoomed out = faster movement)
-    const movementScale = currentDragState.startCameraPosition.z / 100;
+    // Enhanced movement scaling with smoother response
+    const zoomLevel = currentDragState.startCameraPosition.z;
+    const movementScale = Math.pow(zoomLevel / 100, 0.8); // Smoother scaling curve
     
     const newPosition = {
-      x: currentDragState.startCameraPosition.x - (deltaX * movementScale * 0.5),
-      y: currentDragState.startCameraPosition.y - (deltaY * movementScale * 0.5),
+      x: currentDragState.startCameraPosition.x - (deltaX * movementScale * 0.6),
+      y: currentDragState.startCameraPosition.y - (deltaY * movementScale * 0.6),
       z: currentDragState.startCameraPosition.z
     };
 
